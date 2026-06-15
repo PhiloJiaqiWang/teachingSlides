@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day 4: Decorating the Game</title>
+  <style>
+    :root {
+      --bg: #f5efe6;
+      --ink: #1c2230;
+      --muted: #556070;
+      --card: rgba(255, 252, 247, 0.9);
+      --line: rgba(28, 34, 48, 0.12);
+      --sun: #ffb703;
+      --melon: #fb8500;
+      --mint: #52b788;
+      --sky: #70d6ff;
+      --berry: #ef476f;
+      --navy: #26547c;
+      --shadow: 0 22px 60px rgba(38, 84, 124, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 10% 15%, rgba(255, 183, 3, 0.25), transparent 20%),
+        radial-gradient(circle at 85% 15%, rgba(112, 214, 255, 0.28), transparent 18%),
+        radial-gradient(circle at 75% 85%, rgba(82, 183, 136, 0.22), transparent 22%),
+        linear-gradient(135deg, #fef6e4 0%, #f3f8ff 45%, #f8fff3 100%);
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      width: 24vmax;
+      height: 24vmax;
+      border-radius: 38% 62% 42% 58%;
+      opacity: 0.12;
+      filter: blur(6px);
+      pointer-events: none;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+
+    body::before {
+      top: -7vmax;
+      left: -8vmax;
+      background: var(--sun);
+    }
+
+    body::after {
+      right: -10vmax;
+      bottom: -9vmax;
+      background: var(--sky);
+      animation-delay: -6s;
+    }
+
+    @keyframes drift {
+      from { transform: translateY(0) rotate(0deg) scale(1); }
+      to { transform: translateY(2vmax) rotate(14deg) scale(1.08); }
+    }
+
+    .deck {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 1.2rem;
+      padding: clamp(1rem, 2vw, 2rem) clamp(1rem, 4vw, 4rem) 5.5rem;
+      opacity: 0;
+      transform: translateX(6%);
+      pointer-events: none;
+      transition: opacity 420ms ease, transform 420ms ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(10px);
+      color: var(--navy);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    .count {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: clamp(1.2rem, 3vw, 2rem);
+      backdrop-filter: blur(16px);
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    ul {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 5.2rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4.3vw, 3.6rem);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.7rem;
+    }
+
+    h3 {
+      font-size: clamp(1rem, 1.7vw, 1.35rem);
+      margin-bottom: 0.6rem;
+    }
+
+    p,
+    li {
+      font-size: clamp(1rem, 1.7vw, 1.25rem);
+      line-height: 1.45;
+      color: var(--ink);
+    }
+
+    .subtle {
+      color: var(--muted);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.4rem;
+      align-items: stretch;
+    }
+
+    .hero .panel:first-child {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(255, 247, 220, 0.94)),
+        #fff;
+    }
+
+    .hero .panel:last-child {
+      display: grid;
+      gap: 1rem;
+      background:
+        linear-gradient(180deg, rgba(112, 214, 255, 0.18), rgba(82, 183, 136, 0.2)),
+        #fff;
+    }
+
+    .big-line {
+      color: var(--berry);
+      display: block;
+    }
+
+    .spark-grid,
+    .grid-2,
+    .grid-3 {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .spark-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 0.55rem;
+      color: white;
+    }
+
+    .sun { background: var(--sun); color: #4b3200; }
+    .mint { background: var(--mint); }
+    .berry { background: var(--berry); }
+    .sky { background: var(--sky); color: #073b63; }
+    .navy { background: var(--navy); }
+
+    .list {
+      padding-left: 1.15rem;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .code {
+      font-family: "Courier New", monospace;
+      background: #1f2937;
+      color: #f8fafc;
+      border-radius: 18px;
+      padding: 1rem 1.1rem;
+      font-size: clamp(0.92rem, 1.45vw, 1.12rem);
+      line-height: 1.45;
+      white-space: pre-wrap;
+      border: 3px solid rgba(112, 214, 255, 0.35);
+    }
+
+    .mini-card {
+      padding: 1rem;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+    }
+
+    .operator-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .math-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .math-card {
+      padding: 1rem 1.1rem;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+      box-shadow: 0 10px 28px rgba(38, 84, 124, 0.08);
+    }
+
+    .math-card:hover,
+    .math-card:focus-visible {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px rgba(38, 84, 124, 0.16);
+      outline: none;
+    }
+
+    .math-card.open {
+      background: #fff7d9;
+    }
+
+    .math-card strong {
+      font-size: 1.45rem;
+      color: var(--navy);
+    }
+
+    .math-visual {
+      display: none;
+      margin-top: 0.7rem;
+      padding: 0.85rem 1rem;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255, 183, 3, 0.16), rgba(112, 214, 255, 0.18));
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .math-card.open .math-visual {
+      display: block;
+    }
+
+    .math-visual small {
+      display: block;
+      margin-top: 0.35rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .operator {
+      cursor: pointer;
+      border: none;
+      text-align: left;
+      padding: 1rem;
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 10px 28px rgba(38, 84, 124, 0.12);
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+      min-height: 8.5rem;
+    }
+
+    .operator:hover,
+    .operator:focus-visible {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px rgba(38, 84, 124, 0.18);
+      outline: none;
+    }
+
+    .operator strong {
+      display: block;
+      font-size: 1.6rem;
+      margin-bottom: 0.45rem;
+      color: var(--navy);
+    }
+
+    .operator .answer {
+      display: none;
+      margin-top: 0.6rem;
+      color: var(--berry);
+      font-weight: 700;
+    }
+
+    .operator.open {
+      background: #fff7d9;
+    }
+
+    .operator.open .answer {
+      display: block;
+    }
+
+    .reveal-box {
+      margin-top: 1rem;
+      padding: 0.95rem 1rem;
+      border-radius: 18px;
+      background: rgba(251, 133, 0, 0.1);
+      border: 1px dashed rgba(251, 133, 0, 0.45);
+      display: none;
+    }
+
+    .reveal-box.visible {
+      display: block;
+    }
+
+    .btn-row,
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      align-items: center;
+    }
+
+    button,
+    .ghost-link {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 0.85rem 1.2rem;
+      font-weight: 800;
+      font-size: 1rem;
+      transition: transform 180ms ease, opacity 180ms ease, box-shadow 180ms ease;
+    }
+
+    button:hover,
+    button:focus-visible,
+    .ghost-link:hover,
+    .ghost-link:focus-visible {
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .primary {
+      background: var(--navy);
+      color: white;
+      box-shadow: 0 12px 30px rgba(38, 84, 124, 0.24);
+    }
+
+    .secondary {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .ghost-link {
+      background: rgba(255, 255, 255, 0.75);
+      color: var(--muted);
+    }
+
+    .activity-stage {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .counter {
+      display: grid;
+      place-items: center;
+      min-height: 14rem;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at center, rgba(112, 214, 255, 0.25), transparent 58%),
+        white;
+      border: 1px solid var(--line);
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .counter-number {
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 900;
+      color: var(--navy);
+      line-height: 1;
+    }
+
+    .counter-label {
+      color: var(--muted);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .challenge {
+      min-height: 8rem;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: clamp(1.3rem, 2vw, 1.8rem);
+      font-weight: 800;
+      color: var(--navy);
+      background: linear-gradient(135deg, rgba(255, 183, 3, 0.18), rgba(239, 71, 111, 0.12));
+      border-radius: 22px;
+      border: 1px solid rgba(38, 84, 124, 0.12);
+      padding: 1rem;
+    }
+
+    .progress-wrap {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 1rem 1rem 1.1rem;
+      background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.92) 40%);
+      backdrop-filter: blur(6px);
+    }
+
+    .progress {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(38, 84, 124, 0.12);
+      overflow: hidden;
+      margin-bottom: 0.8rem;
+    }
+
+    .progress > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--berry), var(--sun), var(--mint), var(--sky));
+      transition: width 260ms ease;
+    }
+
+    .controls {
+      justify-content: space-between;
+    }
+
+    .dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(38, 84, 124, 0.25);
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: var(--berry);
+      transform: scale(1.15);
+    }
+
+    @media (max-width: 900px) {
+      body {
+        overflow: hidden;
+      }
+
+      .deck {
+        height: 100vh;
+        min-height: 100vh;
+      }
+
+      .slide {
+        padding: 0.8rem 1rem 5.8rem;
+        gap: 0.8rem;
+        overflow: auto;
+      }
+
+      .progress-wrap {
+        position: fixed;
+        bottom: 0;
+        padding: 0.85rem 0.85rem 1rem;
+        background: rgba(255, 255, 255, 0.96);
+        border-top: 1px solid rgba(38, 84, 124, 0.12);
+      }
+
+      h1 {
+        font-size: clamp(2rem, 5vw, 3.7rem);
+      }
+
+      h2 {
+        font-size: clamp(1.55rem, 3.5vw, 2.5rem);
+      }
+
+      h3 {
+        font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+      }
+
+      p,
+      li {
+        font-size: clamp(0.92rem, 1.45vw, 1.08rem);
+      }
+
+      .panel,
+      .mini-card,
+      .code,
+      .operator,
+      .counter,
+      .challenge {
+        border-radius: 20px;
+      }
+
+      .panel {
+        padding: 1rem 1rem 1.1rem;
+      }
+
+      .hero {
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 1rem;
+      }
+
+      .grid-2,
+      .spark-grid,
+      .activity-stage {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-3,
+      .operator-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .operator {
+        min-height: 7.2rem;
+      }
+
+      .controls {
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+
+    @media (max-height: 820px) {
+      body {
+        overflow: hidden;
+      }
+
+      .deck {
+        height: 100vh;
+        min-height: 100vh;
+      }
+
+      .slide {
+        padding: 0.8rem 1rem 5.8rem;
+        gap: 0.8rem;
+        overflow: auto;
+      }
+
+      h1 {
+        font-size: clamp(1.9rem, 4.6vw, 3.5rem);
+      }
+
+      h2 {
+        font-size: clamp(1.45rem, 3vw, 2.2rem);
+      }
+
+      p,
+      li {
+        font-size: clamp(0.9rem, 1.35vw, 1rem);
+      }
+
+      .panel {
+        padding: 0.95rem 1rem;
+      }
+
+      .hero {
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 1rem;
+      }
+
+      .grid-2,
+      .spark-grid,
+      .activity-stage {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-3,
+      .operator-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .hero .panel:first-child {
+        justify-content: space-between;
+      }
+
+      .progress-wrap {
+        position: fixed;
+        bottom: 0;
+        padding: 0.85rem 0.85rem 1rem;
+        background: rgba(255, 255, 255, 0.96);
+        border-top: 1px solid rgba(38, 84, 124, 0.12);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide active" data-title="Welcome">
+      <div class="topbar">
+        <span class="tag">Game Lab Day 4</span>
+        <span class="count">Slide 1</span>
+      </div>
+      <div class="hero">
+        <article class="panel">
+          <div>
+            <p class="subtle">Today we make our games feel alive.</p>
+            <h1>Decorating <span class="big-line">the Game</span></h1>
+            <p style="margin-top:1rem;">Scores, movement, title screens, level changes, endings, and more.</p>
+          </div>
+          <div class="btn-row">
+            <button class="primary" data-next>Start the lesson</button>
+          </div>
+        </article>
+        <aside class="panel">
+          <div class="mini-card">
+            <span class="pill berry">Big Goal</span>
+            <p>Turn a working game into a game that feels exciting and polished.</p>
+          </div>
+          <div class="mini-card">
+            <span class="pill mint">We Will Use</span>
+            <p>If statements, variables, key input, velocity, text, score, and level logic.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Lesson Map">
+      <div class="topbar">
+        <span class="tag">Roadmap</span>
+        <span class="count">Slide 2</span>
+      </div>
+      <div class="panel">
+        <h2>What we are building today</h2>
+        <div class="spark-grid" style="margin-top:1rem;">
+          <div class="mini-card"><span class="pill sun">1</span><p>Learn how <strong>if statements</strong> make things happen at the right moment.</p></div>
+          <div class="mini-card"><span class="pill berry">2</span><p>Add a <strong>title screen</strong> with text and buttons.</p></div>
+          <div class="mini-card"><span class="pill mint">3</span><p>Make players and enemies <strong>move</strong>.</p></div>
+          <div class="mini-card"><span class="pill sky">4</span><p>Track <strong>score</strong>, switch <strong>levels</strong>, and end the game.</p></div>
+        </div>
+        <div class="reveal-box visible" style="display:block; margin-top:1rem;">
+          <p><strong>Important:</strong> not everyone has to build the same feature. Pick the mechanic that matches the game idea.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="If Statements">
+      <div class="topbar">
+        <span class="tag">Core Idea</span>
+        <span class="count">Slide 3</span>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <h2>If this is true...</h2>
+          <p class="subtle">...then run this code.</p>
+          <div class="code" style="margin-top:1rem;">if (condition) {
+  doSomething();
+}</div>
+          <ul class="list" style="margin-top:1rem;">
+            <li>The test goes inside <strong>( )</strong></li>
+            <li>The action goes inside <strong>{ }</strong></li>
+            <li>If the condition is false, the action does not happen</li>
+          </ul>
+        </article>
+        <aside class="panel">
+          <span class="pill berry">Think like a game</span>
+          <div class="mini-card">
+            <p><strong>If</strong> the player touches a coin, <strong>then</strong> score goes up.</p>
+          </div>
+          <div class="mini-card" style="margin-top:1rem;">
+            <p><strong>If</strong> the up key is pressed, <strong>then</strong> the player moves.</p>
+          </div>
+          <div class="mini-card" style="margin-top:1rem;">
+            <p><strong>If</strong> score reaches 10, <strong>then</strong> level 2 starts.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Operators">
+      <div class="topbar">
+        <span class="tag">Mini Game</span>
+        <span class="count">Slide 4</span>
+      </div>
+      <div class="panel">
+        <h2>Tap a card to reveal what it does</h2>
+        <div class="operator-grid" style="margin-top:1rem;">
+          <button class="operator"><strong>==</strong><span>Checks if two values are equal</span><span class="answer">True when both sides match.</span></button>
+          <button class="operator"><strong>!=</strong><span>Checks if values are different</span><span class="answer">True when the sides do not match.</span></button>
+          <button class="operator"><strong>&gt; / &lt;</strong><span>Compares size</span><span class="answer">Use these to test bigger or smaller.</span></button>
+          <button class="operator"><strong>&gt;= / &lt;=</strong><span>Compares size or equal</span><span class="answer">Great for score goals like score &gt;= 10.</span></button>
+          <button class="operator"><strong>&amp;&amp;</strong><span>AND</span><span class="answer">Both parts must be true.</span></button>
+          <button class="operator"><strong>||</strong><span>OR</span><span class="answer">At least one part must be true.</span></button>
+        </div>
+        <div class="grid-3" style="margin-top:1rem;">
+          <div class="mini-card"><span class="pill sun">Math</span><p><strong>+</strong> add more, <strong>-</strong> take away, <strong>*</strong> groups of, <strong>/</strong> split evenly, <strong>%</strong> leftovers</p></div>
+          <div class="mini-card"><span class="pill mint">Loop Helpers</span><p><strong>++</strong> adds 1 step, <strong>--</strong> subtracts 1 step</p></div>
+          <div class="mini-card"><span class="pill sky">Common Use</span><p><strong>score++;</strong>, <strong>lives--;</strong>, or <strong>coins % 2 == 0</strong></p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Math Operators">
+      <div class="topbar">
+        <span class="tag">Visual Math</span>
+        <span class="count">Slide 5</span>
+      </div>
+      <div class="panel">
+        <h2>Can you read what this code means?</h2>
+        <div class="math-grid" style="margin-top:1rem;">
+          <button class="math-card" type="button">
+            <strong>if (lives != 0)</strong>
+            <p>Ask: what does <code>!=</code> mean here?</p>
+            <div class="math-visual">The player still has at least 1 life left.<small>This is true for 1, 2, 3... but false for 0.</small></div>
+          </button>
+          <button class="math-card" type="button">
+            <strong>if (score &gt;= 10)</strong>
+            <p>Ask: why might this be safer than <code>== 10</code>?</p>
+            <div class="math-visual">10, 11, 12... all count.<small>Useful if score might jump from 9 to 11.</small></div>
+          </button>
+          <button class="math-card" type="button">
+            <strong><code>if (hasKey &amp;&amp; doorOpen)</code></strong>
+            <p>Ask: what must be true?</p>
+            <div class="math-visual">Both things must be true at the same time.<small>The player needs the key and the door must be open.</small></div>
+          </button>
+          <button class="math-card" type="button">
+            <strong><code>if (powerUp || shieldOn)</code></strong>
+            <p>Ask: when can the player survive?</p>
+            <div class="math-visual">Either one is enough.<small>The player can have a power-up, a shield, or both.</small></div>
+          </button>
+          <button class="math-card" type="button">
+            <strong>if (score % 2 == 0)</strong>
+            <p>Ask: what kinds of numbers make this true?</p>
+            <div class="math-visual">Even numbers only: 2, 4, 6, 8...<small>The remainder after dividing by 2 must be 0.</small></div>
+          </button>
+          <button class="math-card" type="button">
+            <strong>score++; lives--;</strong>
+            <p>Ask: what changes after one event?</p>
+            <div class="math-visual">Score goes up by 1. Lives go down by 1.<small>Perfect for coins, damage, timers, and counters.</small></div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Clap Activity">
+      <div class="topbar">
+        <span class="tag">Act It Out</span>
+        <span class="count">Slide 6</span>
+      </div>
+      <div class="activity-stage">
+        <article class="panel">
+          <h2>Physical coding activity</h2>
+          <div class="code" style="margin-top:1rem;">var clap = 0;
+function practice() {
+  var spin = false;
+  clap = clap + 1;
+  if (clap == 4) {
+    spin = true;
+    clap = clap - 1;
+  }
+}</div>
+          <div class="btn-row" style="margin-top:1rem;">
+            <button class="primary" id="clapBtn">Clap once</button>
+            <button class="secondary" id="resetClap">Reset</button>
+            <button class="secondary" id="showClapExplain">Explain the logic</button>
+          </div>
+          <div class="reveal-box" id="clapExplain">
+            <p>Each click adds 1 clap. When clap reaches 4, the code turns on spinning and drops clap back to 3. That makes the pattern repeat.</p>
+          </div>
+        </article>
+        <aside class="panel">
+          <div class="counter">
+            <div>
+              <div class="counter-number" id="clapCount">0</div>
+              <div class="counter-label">Current clap value</div>
+            </div>
+          </div>
+          <div class="counter" style="margin-top:1rem; min-height:10rem;">
+            <div>
+              <div class="counter-number" id="spinState">WAIT</div>
+              <div class="counter-label">Spin state</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Title Screen">
+      <div class="topbar">
+        <span class="tag">Start Screen</span>
+        <span class="count">Slide 7</span>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <h2>Build a title screen</h2>
+          <ul class="list" style="margin-top:1rem;">
+            <li>Create a new function like <strong>titleScreen()</strong></li>
+            <li>Draw buttons with shapes and labels</li>
+            <li>Use <strong>text("Hello World", 300, 250);</strong> to show words</li>
+            <li>Give players a clear start or level select choice</li>
+          </ul>
+        </article>
+        <aside class="panel">
+          <span class="pill berry">Design Prompt</span>
+          <div class="challenge">
+            What should your game screen shout first?
+          </div>
+          <div class="btn-row" style="margin-top:1rem;">
+            <button class="primary" id="titleIdeaBtn">Generate a fun title idea</button>
+          </div>
+          <div class="reveal-box" id="titleIdeaBox"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Player Movement">
+      <div class="topbar">
+        <span class="tag">Player</span>
+        <span class="count">Slide 8</span>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <h2>Make the player move</h2>
+          <ol class="list" style="padding-left:1.35rem;">
+            <li>Create a function like <strong>playerMovement()</strong></li>
+            <li>Add an <strong>if</strong> statement</li>
+            <li>Use <strong>keyDown("up")</strong> or another key</li>
+            <li>Change <strong>sprite.x</strong> or <strong>sprite.y</strong></li>
+            <li>Call the function in the draw loop</li>
+          </ol>
+        </article>
+        <aside class="panel">
+          <div class="code">if (keyDown("up")) {
+  egg_1.y = egg_1.y - 4;
+}
+
+if (keyDown("right")) {
+  egg_1.x = egg_1.x + 4;
+}</div>
+          <div class="mini-card" style="margin-top:1rem;">
+            <p><strong>Rule to remember:</strong> up and left usually subtract, down and right usually add.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Enemy Movement">
+      <div class="topbar">
+        <span class="tag">Enemies</span>
+        <span class="count">Slide 9</span>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <h2>Make enemies move on their own</h2>
+          <ul class="list" style="margin-top:1rem;">
+            <li>Use <strong>velocityX</strong> or <strong>velocityY</strong></li>
+            <li>Enemies usually do not wait for player input</li>
+            <li>Create edge sprites to stop them leaving the screen</li>
+            <li>Use collisions for bouncing, blocking, or combat</li>
+          </ul>
+        </article>
+        <aside class="panel">
+          <div class="code">fox.velocityY = 3;
+createEdgeSprites();
+fox.collide(edges);
+
+if (fox.isTouching(egg)) {
+  egg.destroy();
+}</div>
+          <div class="mini-card" style="margin-top:1rem;">
+            <p><strong>Question:</strong> should the enemy bounce, chase, patrol, or guard one area?</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Score">
+      <div class="topbar">
+        <span class="tag">Score</span>
+        <span class="count">Slide 10</span>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <h2>Track points</h2>
+          <div class="code">var score = 0;
+
+if (player.isTouching(coin)) {
+  score = score + 1;
+}</div>
+          <ul class="list" style="margin-top:1rem;">
+            <li>Put the score variable in the header</li>
+            <li>Increase it when the player completes a goal</li>
+            <li>Common triggers: coins, jumps, hits, survival time</li>
+          </ul>
+        </article>
+        <aside class="panel">
+          <span class="pill mint">Class Brainstorm</span>
+          <div class="challenge" id="scoreIdea">Coins are not the only way to score.</div>
+          <div class="btn-row" style="margin-top:1rem;">
+            <button class="primary" id="scoreIdeaBtn">Give me a scoring idea</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Levels and Endings">
+      <div class="topbar">
+        <span class="tag">Progression</span>
+        <span class="count">Slide 11</span>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <h2>Change levels or end the game</h2>
+          <div class="code">var level = 0;
+var level_end = false;
+
+if (score >= 10) {
+  level = level + 1;
+}
+
+if (enemy.isTouching(player)) {
+  level_end = true;
+}</div>
+        </article>
+        <aside class="panel">
+          <div class="mini-card">
+            <span class="pill berry">Level</span>
+            <p>Use a number like <strong>level = 1</strong>, <strong>level = 2</strong>, and so on.</p>
+          </div>
+          <div class="mini-card" style="margin-top:1rem;">
+            <span class="pill navy">End State</span>
+            <p>Use a boolean: <strong>true</strong> or <strong>false</strong>.</p>
+          </div>
+          <div class="mini-card" style="margin-top:1rem;">
+            <span class="pill sky">Message</span>
+            <p>Show text like <strong>PRESS SPACE TO TRY AGAIN</strong>.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Text and Style">
+      <div class="topbar">
+        <span class="tag">Polish</span>
+        <span class="count">Slide 12</span>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <h2>Use text to guide the player</h2>
+          <div class="code">textFont("Arial");
+textSize(12);
+fill("yellow");
+text("Level 2!", 100, 80);</div>
+          <ul class="list" style="margin-top:1rem;">
+            <li>Show score, level, and directions</li>
+            <li>Change font, size, alignment, and fill color</li>
+            <li>Use text to celebrate wins and explain losses</li>
+          </ul>
+        </article>
+        <aside class="panel">
+          <span class="pill sun">Good UI text</span>
+          <div class="mini-card"><p><strong>Collect 10 stars!</strong></p></div>
+          <div class="mini-card" style="margin-top:1rem;"><p><strong>Watch out for foxes!</strong></p></div>
+          <div class="mini-card" style="margin-top:1rem;"><p><strong>Press space to restart</strong></p></div>
+        </aside>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="progress-wrap">
+    <div class="progress"><span id="progressBar"></span></div>
+    <div class="controls">
+      <div class="btn-row">
+        <button class="secondary" id="prevBtn">Previous</button>
+        <button class="primary" id="nextBtn">Next</button>
+      </div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const progressBar = document.getElementById("progressBar");
+    const dotsWrap = document.getElementById("dots");
+    const countLabels = [...document.querySelectorAll(".count")];
+    let current = 0;
+
+    function renderDots() {
+      slides.forEach((slide, index) => {
+        const dot = document.createElement("button");
+        dot.className = "dot";
+        dot.type = "button";
+        dot.setAttribute("aria-label", `Go to slide ${index + 1}`);
+        dot.addEventListener("click", () => goTo(index));
+        dotsWrap.appendChild(dot);
+      });
+    }
+
+    function updateDeck() {
+      slides.forEach((slide, index) => {
+        slide.classList.toggle("active", index === current);
+      });
+
+      const percent = ((current + 1) / slides.length) * 100;
+      progressBar.style.width = `${percent}%`;
+
+      [...dotsWrap.children].forEach((dot, index) => {
+        dot.classList.toggle("active", index === current);
+      });
+    }
+
+    function goTo(index) {
+      current = (index + slides.length) % slides.length;
+      updateDeck();
+    }
+
+    function nextSlide() {
+      goTo(current + 1);
+    }
+
+    function prevSlide() {
+      goTo(current - 1);
+    }
+
+    document.getElementById("nextBtn").addEventListener("click", nextSlide);
+    document.getElementById("prevBtn").addEventListener("click", prevSlide);
+    document.querySelectorAll("[data-next]").forEach((btn) => btn.addEventListener("click", nextSlide));
+    document.querySelectorAll("[data-jump]").forEach((btn) => {
+      btn.addEventListener("click", () => goTo(Number(btn.dataset.jump)));
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (["ArrowRight", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        nextSlide();
+      }
+      if (["ArrowLeft", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        prevSlide();
+      }
+      if (event.key === "Home") {
+        goTo(0);
+      }
+      if (event.key === "End") {
+        goTo(slides.length - 1);
+      }
+    });
+
+    document.querySelectorAll(".operator").forEach((card) => {
+      card.addEventListener("click", () => card.classList.toggle("open"));
+    });
+
+    document.querySelectorAll(".math-card").forEach((card) => {
+      card.addEventListener("click", () => card.classList.toggle("open"));
+    });
+
+    const clapCount = document.getElementById("clapCount");
+    const spinState = document.getElementById("spinState");
+    const clapExplain = document.getElementById("clapExplain");
+    let clap = 0;
+
+    document.getElementById("clapBtn").addEventListener("click", () => {
+      let spin = false;
+      clap = clap + 1;
+      if (clap === 4) {
+        spin = true;
+        clap = clap - 1;
+      }
+      clapCount.textContent = clap;
+      spinState.textContent = spin ? "SPIN!" : "WAIT";
+      spinState.style.color = spin ? "var(--berry)" : "var(--navy)";
+    });
+
+    document.getElementById("resetClap").addEventListener("click", () => {
+      clap = 0;
+      clapCount.textContent = "0";
+      spinState.textContent = "WAIT";
+      spinState.style.color = "var(--navy)";
+    });
+
+    document.getElementById("showClapExplain").addEventListener("click", () => {
+      clapExplain.classList.toggle("visible");
+    });
+
+    const titleIdeas = [
+      "Pizza Panic",
+      "Fox Escape",
+      "Rocket Egg Rescue",
+      "Treasure Dash",
+      "Super Snack Quest",
+      "Robot Maze Madness"
+    ];
+
+    const scoreIdeas = [
+      "Score a point every time the player dodges an enemy.",
+      "Score when the player rescues a friend sprite.",
+      "Score for surviving 5 more seconds.",
+      "Score by collecting letters that spell a word.",
+      "Score when the player lands on a safe platform."
+    ];
+
+    function randomFrom(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    const titleIdeaBtn = document.getElementById("titleIdeaBtn");
+    const titleIdeaBox = document.getElementById("titleIdeaBox");
+    if (titleIdeaBtn && titleIdeaBox) {
+      titleIdeaBtn.addEventListener("click", () => {
+        titleIdeaBox.textContent = randomFrom(titleIdeas);
+        titleIdeaBox.classList.add("visible");
+      });
+    }
+
+    const scoreIdeaBtn = document.getElementById("scoreIdeaBtn");
+    const scoreIdeaBox = document.getElementById("scoreIdea");
+    if (scoreIdeaBtn && scoreIdeaBox) {
+      scoreIdeaBtn.addEventListener("click", () => {
+        scoreIdeaBox.textContent = randomFrom(scoreIdeas);
+      });
+    }
+
+    renderDots();
+    updateDeck();
+  </script>
+</body>
+</html>
