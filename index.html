@@ -221,6 +221,10 @@
       font-size: 2rem;
     }
 
+    .slide[data-title="Clap Activity"] .code {
+      font-size: clamp(1rem, 1.5vw, 1.6rem);
+    }
+
     .big-line {
       color: var(--berry);
       display: block;
@@ -693,43 +697,44 @@
         <span class="tag">Game Lab Day 4</span>
         <span class="count">Slide 1</span>
       </div>
-      <div class="hero">
+      <div class="hero" style="grid-template-columns: 1fr;">
         <article class="panel">
           <div>
-            <p class="subtle">Today we make our games feel alive.</p>
-            <h1>Decorating <span class="big-line">the Game</span></h1>
-            <p style="margin-top:1rem;">Scores, movement, title screens, level changes, endings, and more.</p>
+            <p class="subtle">Game logic for making things happen at the right time</p>
+            <h1>If <span style="color: var(--berry);">statement</span></h1>
+            <p style="margin-top:0.8rem;">How games decide when to move, react, score, and change.</p>
           </div>
           <div class="btn-row">
             <button class="primary" data-next>Start the lesson</button>
           </div>
         </article>
-        <aside class="panel">
-          <div class="mini-card">
-            <span class="pill berry">Big Goal</span>
-            <p>Turn a working game into a game that feels exciting and polished.</p>
-          </div>
-          <div class="mini-card">
-            <span class="pill mint">We Will Use</span>
-            <p>If statements, variables, key input, velocity, text, score, and level logic.</p>
-          </div>
-        </aside>
       </div>
     </section>
 
-    <section class="slide" data-title="Lesson Map">
+    <section class="slide" data-title="Variables">
       <div class="topbar">
-        <span class="tag">Roadmap</span>
+        <span class="tag">Variables</span>
         <span class="count">Slide 2</span>
       </div>
-      <div class="panel">
-        <h2>What we are building today</h2>
-        <div class="spark-grid" style="margin-top:1rem;">
-          <div class="mini-card"><span class="pill sun">1</span><p>Learn how <strong>if statements</strong> make things happen at the right moment.</p></div>
-          <div class="mini-card"><span class="pill berry">2</span><p>Add a <strong>title screen</strong> with text and buttons.</p></div>
-          <div class="mini-card"><span class="pill mint">3</span><p>Make players and enemies <strong>move</strong>.</p></div>
-          <div class="mini-card"><span class="pill sky">4</span><p>Track <strong>score</strong>, switch <strong>levels</strong>, and end the game.</p></div>
-        </div>
+      <div class="grid-2">
+        <article class="panel">
+          <h2>What is the difference?</h2>
+          <div class="code">var x = 5;
+x = 8;</div>
+          <div class="mini-card" style="margin-top:1rem;">
+            <p><strong>var x = 5;</strong> means: create a brand new variable named <strong>x</strong>, and give it a starting value.</p>
+          </div>
+          <div class="mini-card" style="margin-top:1rem;">
+            <p><strong>x = 8;</strong> means: the variable already exists, and now we are changing its value.</p>
+          </div>
+        </article>
+        <aside class="panel">
+          <img
+            src="/Users/jiaqiwang/Downloads/ChatGPT Image Jun 17, 2026, 07_46_44 PM.png"
+            alt="Visual explanation of var making a box and x equals changing what is inside"
+            style="width:100%; height:auto; border-radius:22px; display:block; border:1px solid var(--line);"
+          />
+        </aside>
       </div>
     </section>
 
@@ -803,11 +808,6 @@
             <div class="math-visual">The player still has at least 1 life left.<small>This is true for 1, 2, 3... but false for 0.</small></div>
           </button>
           <button class="math-card" type="button">
-            <strong>if (score &gt;= 10)</strong>
-            <p>Ask: why might this be safer than <code>== 10</code>?</p>
-            <div class="math-visual">10, 11, 12... all count.<small>Useful if score might jump from 9 to 11.</small></div>
-          </button>
-          <button class="math-card" type="button">
             <strong><code>if (hasKey &amp;&amp; doorOpen)</code></strong>
             <p>Ask: what must be true?</p>
             <div class="math-visual">Both things must be true at the same time.<small>The player needs the key and the door must be open.</small></div>
@@ -822,31 +822,53 @@
             <p>Ask: what kinds of numbers make this true?</p>
             <div class="math-visual">Even numbers only: 2, 4, 6, 8...<small>The remainder after dividing by 2 must be 0.</small></div>
           </button>
-          <button class="math-card" type="button">
-            <strong>score++; lives--;</strong>
-            <p>Ask: what changes after one event?</p>
-            <div class="math-visual">Score goes up by 1. Lives go down by 1.<small>Perfect for coins, damage, timers, and counters.</small></div>
-          </button>
         </div>
       </div>
     </section>
 
     <section class="slide" data-title="Clap Activity">
       <div class="topbar">
-        <span class="tag">Act It Out</span>
+        <span class="tag">Game Engine</span>
         <span class="count">Slide 6</span>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <h2>What is <code>draw() { }</code>?</h2>
+          <div class="code" style="margin-top:1rem;">function draw() {
+  // your game keeps updating here
+}</div>
+          <p style="margin-top:1rem;">Think of <strong>draw()</strong> like the heartbeat of the game. It keeps running again and again so the screen can update, sprites can move, and the game can react.</p>
+        </article>
+        <aside class="panel">
+          <div class="challenge">draw() runs about 30 times every second.</div>
+          <div class="mini-card" style="margin-top:1rem;">
+            <p><strong>That means:</strong> check keys, move sprites, update score, and redraw the game over and over.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Clap Activity">
+      <div class="topbar">
+        <span class="tag">Act It Out</span>
+        <span class="count">Slide 7</span>
       </div>
       <div class="activity-stage">
         <article class="panel">
           <h2>Physical coding activity</h2>
           <div class="code" style="margin-top:1rem;">var clap = 0;
+var spin = false;
+
 function practice() {
-  var spin = false;
   clap = clap + 1;
   if (clap == 4) {
     spin = true;
     clap = clap - 1;
   }
+}
+
+function draw() {
+  practice();
 }</div>
           <div class="btn-row" style="margin-top:1rem;">
             <button class="primary" id="clapBtn">Clap once</button>
@@ -870,34 +892,81 @@ function practice() {
               <div class="counter-label">Spin state</div>
             </div>
           </div>
+          <div class="btn-row" style="margin-top:1rem;">
+            <button class="primary" id="clapBtnRight">Clap once</button>
+            <button class="secondary" id="resetClapRight">Reset</button>
+          </div>
         </aside>
       </div>
     </section>
 
-    <section class="slide" data-title="Title Screen">
+    <section class="slide" data-title="Change Levels">
       <div class="topbar">
-        <span class="tag">Start Screen</span>
-        <span class="count">Slide 7</span>
+        <span class="tag">Progression</span>
+        <span class="count">Slide 8</span>
       </div>
       <div class="grid-2">
         <article class="panel">
-          <h2>Build a title screen</h2>
+          <h2>Change levels</h2>
+          <div class="code">var level = 0;
+
+if (score >= 10) {
+  level = level + 1;
+}</div>
           <ul class="list" style="margin-top:1rem;">
-            <li>Create a new function like <strong>titleScreen()</strong></li>
-            <li>Draw buttons with shapes and labels</li>
-            <li>Use <strong>text("Hello World", 300, 250);</strong> to show words</li>
-            <li>Give players a clear start or level select choice</li>
+            <li>Create a variable in the header for counting levels</li>
+            <li>Use an if statement to increase the level when a condition is met</li>
           </ul>
         </article>
         <aside class="panel">
-          <span class="pill berry">Design Prompt</span>
-          <div class="challenge">
-            What should your game screen shout first?
+          <div class="mini-card">
+            <span class="pill berry">Level</span>
+            <p>Use a number like <strong>level = 1</strong>, <strong>level = 2</strong>, and so on.</p>
           </div>
-          <div class="btn-row" style="margin-top:1rem;">
-            <button class="primary" id="titleIdeaBtn">Generate a fun title idea</button>
+          <div class="mini-card" style="margin-top:1rem;">
+            <span class="pill navy">Draw Loop</span>
+            <div class="code" style="margin-top:0.6rem;">function draw() {
+  if (level == 1) { }
+  if (level == 2) { }
+}</div>
           </div>
-          <div class="reveal-box" id="titleIdeaBox"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="End Game">
+      <div class="topbar">
+        <span class="tag">End State</span>
+        <span class="count">Slide 9</span>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <h2>End game or end level</h2>
+          <div class="code">var level_end = false;
+
+if (enemy.isTouching(player)) {
+  level_end = true;
+}
+
+if (level_end == true) {
+  player.destroy();
+  text("PRESS SPACE TO TRY AGAIN", 100, 150);
+}</div>
+          <ul class="list" style="margin-top:1rem;">
+            <li>Create a variable in the header for tracking level state</li>
+            <li>This is a boolean, so it is only <strong>true</strong> or <strong>false</strong></li>
+            <li>When the losing condition happens, turn <strong>level_end</strong> to true</li>
+          </ul>
+        </article>
+        <aside class="panel">
+          <div class="mini-card">
+            <span class="pill berry">Boolean</span>
+            <p>Use <strong>var level_end = false;</strong> at the start, then switch it later.</p>
+          </div>
+          <div class="mini-card" style="margin-top:1rem;">
+            <span class="pill sky">Message</span>
+            <p>Show text like <strong>PRESS SPACE TO TRY AGAIN</strong>.</p>
+          </div>
         </aside>
       </div>
     </section>
@@ -905,7 +974,7 @@ function practice() {
     <section class="slide" data-title="Player Movement">
       <div class="topbar">
         <span class="tag">Player</span>
-        <span class="count">Slide 8</span>
+        <span class="count">Slide 10</span>
       </div>
       <div class="grid-2">
         <article class="panel">
@@ -936,7 +1005,7 @@ if (keyDown("right")) {
     <section class="slide" data-title="Enemy Movement">
       <div class="topbar">
         <span class="tag">Enemies</span>
-        <span class="count">Slide 9</span>
+        <span class="count">Slide 11</span>
       </div>
       <div class="grid-2">
         <article class="panel">
@@ -965,8 +1034,35 @@ if (fox.isTouching(egg)) {
 
     <section class="slide" data-title="Score">
       <div class="topbar">
+        <span class="tag">Boundaries</span>
+        <span class="count">Slide 12</span>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <h2>Create edge sprites</h2>
+          <ul class="list" style="margin-top:1rem;">
+            <li>Use <strong>createEdgeSprites()</strong> to make invisible walls around the game</li>
+            <li>These edges stop sprites from escaping the screen</li>
+            <li>You can use <strong>bounceOff(edges)</strong> or <strong>collide(edges)</strong></li>
+          </ul>
+        </article>
+        <aside class="panel">
+          <img
+            src="/Users/jiaqiwang/Downloads/Screenshot 2026-06-17 at 19.50.41.png"
+            alt="Block example showing createEdgeSprites and bounceOff edges"
+            style="width:100%; height:auto; border-radius:18px; display:block; border:1px solid var(--line);"
+          />
+          <div class="mini-card" style="margin-top:1rem;">
+            <p><strong>Example:</strong> the bunny stays inside the game area because it bounces off the edges.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Score">
+      <div class="topbar">
         <span class="tag">Score</span>
-        <span class="count">Slide 10</span>
+        <span class="count">Slide 13</span>
       </div>
       <div class="grid-2">
         <article class="panel">
@@ -987,42 +1083,6 @@ if (player.isTouching(coin)) {
           <div class="challenge" id="scoreIdea">Coins are not the only way to score.</div>
           <div class="btn-row" style="margin-top:1rem;">
             <button class="primary" id="scoreIdeaBtn">Give me a scoring idea</button>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Levels and Endings">
-      <div class="topbar">
-        <span class="tag">Progression</span>
-        <span class="count">Slide 11</span>
-      </div>
-      <div class="grid-2">
-        <article class="panel">
-          <h2>Change levels or end the game</h2>
-          <div class="code">var level = 0;
-var level_end = false;
-
-if (score >= 10) {
-  level = level + 1;
-}
-
-if (enemy.isTouching(player)) {
-  level_end = true;
-}</div>
-        </article>
-        <aside class="panel">
-          <div class="mini-card">
-            <span class="pill berry">Level</span>
-            <p>Use a number like <strong>level = 1</strong>, <strong>level = 2</strong>, and so on.</p>
-          </div>
-          <div class="mini-card" style="margin-top:1rem;">
-            <span class="pill navy">End State</span>
-            <p>Use a boolean: <strong>true</strong> or <strong>false</strong>.</p>
-          </div>
-          <div class="mini-card" style="margin-top:1rem;">
-            <span class="pill sky">Message</span>
-            <p>Show text like <strong>PRESS SPACE TO TRY AGAIN</strong>.</p>
           </div>
         </aside>
       </div>
@@ -1122,7 +1182,7 @@ if (enemy.isTouching(player)) {
     const clapExplain = document.getElementById("clapExplain");
     let clap = 0;
 
-    document.getElementById("clapBtn").addEventListener("click", () => {
+    function runClapStep() {
       let spin = false;
       clap = clap + 1;
       if (clap === 4) {
@@ -1132,14 +1192,20 @@ if (enemy.isTouching(player)) {
       clapCount.textContent = clap;
       spinState.textContent = spin ? "SPIN!" : "WAIT";
       spinState.style.color = spin ? "var(--berry)" : "var(--navy)";
-    });
+    }
 
-    document.getElementById("resetClap").addEventListener("click", () => {
+    function resetClapState() {
       clap = 0;
       clapCount.textContent = "0";
       spinState.textContent = "WAIT";
       spinState.style.color = "var(--navy)";
-    });
+    }
+
+    document.getElementById("clapBtn").addEventListener("click", runClapStep);
+    document.getElementById("clapBtnRight").addEventListener("click", runClapStep);
+
+    document.getElementById("resetClap").addEventListener("click", resetClapState);
+    document.getElementById("resetClapRight").addEventListener("click", resetClapState);
 
     document.getElementById("showClapExplain").addEventListener("click", () => {
       clapExplain.classList.toggle("visible");
